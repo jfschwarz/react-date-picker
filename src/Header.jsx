@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react')
+var substyle = require('substyle')
 var P = React.PropTypes
 var onEnter = require('./onEnter')
 
@@ -19,38 +20,36 @@ module.exports = React.createClass({
   render: function() {
 
     var props = this.props
-
-    return <div className="dp-header">
-      <div className="dp-nav-table">
-        <div className="dp-row">
-          <div
-            tabIndex="1"
-            role="link"
-            className="dp-prev-nav dp-nav-cell dp-cell"
-            onClick={props.onPrev}
-            onKeyUp={onEnter(props.onPrev)}
-          >{props.prevText}
-          </div>
-
-          <div
-            tabIndex="1"
-            role="link"
-            className="dp-nav-view dp-cell"
-            colSpan={props.colspan}
-            onClick={props.onChange}
-            onKeyUp={onEnter(props.onChange)}
-          >{props.children}</div>
-
-          <div
-            tabIndex="1"
-            role="link"
-            className="dp-next-nav dp-nav-cell dp-cell"
-            onClick={props.onNext}
-            onKeyUp={onEnter(props.onNext)}
-          >{props.nextText}</div>
+console.log(props);
+    return <div {...substyle(props)}>
+      <div {...substyle(props, 'row')}>
+        <div
+          tabIndex="1"
+          role="link"
+          {...substyle(props, ['prev-nav', 'nav-cell', 'cell'])}
+          onClick={props.onPrev}
+          onKeyUp={onEnter(props.onPrev)}
+        >{props.prevText}
         </div>
-        </div>
+
+        <div
+          tabIndex="1"
+          role="link"
+          {...substyle(props, ['nav-view', 'cell'])}
+          colSpan={props.colspan}
+          onClick={props.onChange}
+          onKeyUp={onEnter(props.onChange)}
+        >{props.children}</div>
+
+        <div
+          tabIndex="1"
+          role="link"
+          {...substyle(props, ['next-nav', 'nav-cell', 'cell'])}
+          onClick={props.onNext}
+          onKeyUp={onEnter(props.onNext)}
+        >{props.nextText}</div>
       </div>
+    </div>
   }
 
 })

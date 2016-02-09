@@ -1,6 +1,7 @@
 'use strict'
 
 var React  = require('react')
+var substyle = require('substyle')
 
 var moment   = require('moment')
 var assign   = require('object-assign')
@@ -11,6 +12,8 @@ var YearView   = require('./YearView')
 var DecadeView = require('./DecadeView')
 var Header     = require('./Header')
 var toMoment   = require('./toMoment')
+
+var defaultStyle = require('./style/flexbox')
 
 var hasOwn = function(obj, key){
     return Object.prototype.hasOwnProperty.call(obj, key)
@@ -25,6 +28,7 @@ var Views = {
 }
 
 function emptyFn(){}
+
 
 var DatePicker = React.createClass({
 
@@ -52,9 +56,6 @@ var DatePicker = React.createClass({
             isDatePicker: true,
             navOnDateClick: true,
             highlightRangeOnMouseMove: true,
-            defaultStyle: {
-                boxSizing: 'border-box'
-            },
             onRangeChange: () => {}
         })
 
@@ -186,15 +187,11 @@ var DatePicker = React.createClass({
         // props.onChange  = this.handleChange
         // props.onSelect  = this.handleSelect
 
-        var className = (this.props.className || '') + ' date-picker'
+        props.style = assign({}, defaultStyle, props.style)
 
-        props.style = this.prepareStyle(props)
-
-        var viewProps = props
         var viewProps = asConfig(props)
 
         viewProps.toMoment = this.toMoment
-        viewProps.highlightWeekends = this.props.highlightWeekends
         viewProps.weekNumbers = this.props.weekNumbers
         viewProps.weekNumberName = this.props.weekNumberName
         viewProps.dateString = dateString
@@ -207,11 +204,16 @@ var DatePicker = React.createClass({
         viewProps.highlightRangeOnMouseMove = this.props.highlightRangeOnMouseMove
         viewProps.range = props.range
 
+        viewProps = {
+            ...viewProps,
+            ...substyle(props, [this.getViewName()])
+        }
+
         return (
-            <div {...this.props} className={className} style={props.style} >
+            <div {...this.props} {...substyle(props)} >
                 {this.renderHeader(view, props)}
 
-                <div className="dp-body" style={{flex: 1}}>
+                <div {...substyle(props, 'body')}>
                     {view(viewProps)}
                 </div>
 
@@ -220,20 +222,9 @@ var DatePicker = React.createClass({
         )
     },
 
-    prepareStyle: function(props) {
-        return assign({}, props.defaultStyle, props.style)
-    },
-
     renderFooter: function(props) {
         if (this.props.hideFooter){
             return
-        }
-
-        if (this.props.today){
-            console.warn('Please use "todayText" prop instead of "today"!')
-        }
-        if (this.props.gotoSelected){
-            console.warn('Please use "gotoSelectedText" prop instead of "gotoSelected"!')
         }
 
         var todayText        = this.props.todayText || 'Today'
@@ -258,11 +249,11 @@ var DatePicker = React.createClass({
         }
 
         return (
-            <div className="dp-footer">
+            <div {...substyle(this.props, 'footer')}>
                 <div
                     tabIndex="1"
                     role="link"
-                    className="dp-footer-today"
+                    {...substyle(this.props, 'footer-today')}
                     onClick={footerProps.gotoToday}
                     onKeyUp={onEnter(footerProps.gotoToday)}
                 >
@@ -271,7 +262,7 @@ var DatePicker = React.createClass({
                 <div
                     tabIndex="1"
                     role="link"
-                    className="dp-footer-selected"
+                    {...substyle(this.props, 'footer-selected')}
                     onClick={footerProps.gotoSelected}
                     onKeyUp={onEnter(footerProps.gotoSelected)}
                 >
@@ -322,6 +313,7 @@ var DatePicker = React.createClass({
         var next    = this.props.navNext
 
         return <Header
+                {...substyle(props, 'header')}
                 prevText={prev}
                 nextText={next}
                 colspan={colspan}
@@ -528,8 +520,6 @@ DatePicker.views = Views
 var PT = React.PropTypes
 
 DatePicker.propTypes = {
-    highlightWeekends: PT.bool,
-
     /**
      * Function to be called when user selects a date.
      *

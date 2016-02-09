@@ -1,6 +1,7 @@
 'use strict'
 
 var React  = require('react')
+var substyle = require('substyle')
 var moment = require('moment')
 var assign = require('object-assign')
 
@@ -118,7 +119,7 @@ var MonthView = React.createClass({
     var daysInView = this.getDaysInMonth(viewMoment)
 
     return (
-        <div className="dp-table dp-month-view" onMouseLeave={props.highlightRangeOnMouseMove && this.handleViewMouseLeave}>
+        <div {...substyle(props)} onMouseLeave={props.highlightRangeOnMouseMove && this.handleViewMouseLeave}>
             {this.renderWeekDayNames()}
             {this.renderDays(props, daysInView)}
         </div>
@@ -141,7 +142,7 @@ var MonthView = React.createClass({
 
     const weekNumberProps = {
       key: 'week',
-      className: 'dp-cell dp-weeknumber',
+      ...substyle(props, ['cell', 'weeknumber']),
 
       //week number
       week: week,
@@ -175,7 +176,10 @@ var MonthView = React.createClass({
    */
   renderDays: function(props, days) {
     var nodes = days.map(function(date){
-        return this.renderDay(props, date)
+        return this.renderDay({
+          ...props,
+          ...substyle(props, ['day', 'cell'])
+        }, date)
     }, this)
 
     var len        = days.length
@@ -201,71 +205,36 @@ var MonthView = React.createClass({
     }
 
     return buckets.map(function(bucket, i){
-      return <div key={"row" + i} className="dp-week dp-row">{bucket}</div>
+      return <div key={"row" + i} {...substyle(props, ['week', 'row'])}>{bucket}</div>
     })
   },
 
   renderDay: function(props, date) {
     var dayText = FORMAT.day(date, props.dayFormat)
-    var classes = ["dp-cell dp-day"]
 
     var dateTimestamp = +date
     var mom = this.toMoment(date)
     var onClick = this.handleClick.bind(this, props, date, dateTimestamp)
 
     const range = this.state.range || this.props.range
-    var beforeMinDate
-
-    if (dateTimestamp == TODAY){
-      classes.push('dp-current')
-    } else if (dateTimestamp < this.monthFirst){
-      classes.push('dp-prev')
-    } else if (dateTimestamp > this.monthLast){
-      classes.push('dp-next')
-    }
-
-
-    if (props.minDate && date < props.minDate){
-      classes.push('dp-disabled dp-before-min')
-      beforeMinDate = true
-    }
-
-    var afterMaxDate
-    if (props.maxDate && date > props.maxDate){
-      classes.push('dp-disabled dp-after-max')
-      afterMaxDate = true
-    }
-
-    if (dateTimestamp == props.moment){
-      classes.push('dp-value')
-
-    }
-
-
+    var inRange = false;
     if (range){
-
       const start = mom
       const end = moment(start).endOf('day')
-
       const [rangeStart, rangeEnd] = range
-
-      if (
-        isInRange(start, range) ||
+      inRange = isInRange(start, range) ||
         isInRange(end, range) ||
         rangeStart && isInRange(rangeStart, [start, end]) ||
         rangeEnd && isInRange(rangeEnd, [start, end])
-      ) {
-        classes.push('dp-in-range')
-      }
     }
 
-    var weekDay = mom.day()
+    const beforeMinDate = props.minDate && date < props.minDate
+    const afterMaxDate = props.maxDate && date > props.maxDate
 
-    if (weekDay === 0 /* Sunday */ || weekDay === 6 /* Saturday */){
-      classes.push('dp-weekend')
-      props.highlightWeekends && classes.push('dp-weekend-highlight')
-    }
+    const weekDay = mom.day()
+    const isWeekend = weekDay === 0 /* Sunday */ || weekDay === 6 /* Saturday */
 
+    
     var renderDayProps = {
       role     : 'link',
       tabIndex : 1,
@@ -273,11 +242,21 @@ var MonthView = React.createClass({
       text     : dayText,
       date     : mom,
       moment   : mom,
-      className: classes.join(' '),
-      style    : {},
       onClick  : onClick,
       onKeyUp  : onEnter(onClick),
-      children : dayText
+      children : dayText,
+
+      ...substyle(props, {
+        '&current': dateTimestamp === TODAY,
+        '&prev': dateTimestamp < this.monthFirst,
+        '&next': dateTimestamp > this.monthLast,
+        '&before-min': beforeMinDate,
+        '&after-max': afterMaxDate,
+        '&value': dateTimestamp === props.moment,
+        '&disabled': beforeMinDate || afterMaxDate,
+        '&in-range': inRange,
+        '&weekend': isWeekend,
+      })
     }
 
     if (props.range && props.highlightRangeOnMouseMove){
@@ -352,8 +331,8 @@ var MonthView = React.createClass({
       var weekNumber = this.props.weekNumbers ? [this.props.weekNumberName] : []
       var names = weekNumber.concat(this.getWeekDayNames())
 
-      return <div className="dp-row dp-week-day-names">
-        {names.map( (name, index) => <div key={index} className="dp-cell dp-week-day-name">{name}</div>)}
+      return <div {...substyle(this.props, ['row', 'week-day-names'])}>
+        {names.map( (name, index) => <div key={index} {...substyle(this.props, ['cell', 'week-day-name'])}>{name}</div>)}
       </div>
   },
 
