@@ -8,6 +8,7 @@
     "test:watch": "mocha --recursive --reporter spec --require should --watch",
     "start": "webpack-dev-server --progress --config build/webpack.config.js",
     "build": "babel src --out-dir lib",
+    "clean": "rimraf lib",
     "prepublish": "npm run clean && npm run build"
   },
   "contributors": [],
@@ -15,7 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "moment": ">=2.8.0",
-    "object-assign": "^4.0.1"
+    "object-assign": "^4.0.1",
+    "substyle": "^1.0.0"
   },
   "peerDependencies": {
     "react": ">=0.14.0"
@@ -35,6 +37,7 @@
     "react": "^0.14.7",
     "react-dom": ">=0.14.0",
     "react-hot-loader": "^1.2.8",
+    "rimraf": "^2.5.1",
     "should": "^6.0.3",
     "style-loader": "^0.12.3",
     "stylus-loader": "~0.4.0",
