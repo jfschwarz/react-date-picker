@@ -17,13 +17,14 @@
   "dependencies": {
     "moment": ">=2.8.0",
     "object-assign": "^4.0.1",
-    "substyle": "^1.0.0"
+    "substyle": "^1.0.2"
   },
   "peerDependencies": {
     "react": ">=0.14.0"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.1.0",
+    "babel-cli": "^6.5.1",
     "babel-loader": "^5.4.0",
     "css-loader": "^0.15.5",
     "extract-text-webpack-plugin": "^0.8.2",
