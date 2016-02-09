@@ -12,8 +12,6 @@ var render = require('react-dom').render
 var range = ['2016-02-01', '2016-02-09']
 var date = moment().add(2, 'days')
 
-var LOCALE = 'en'
-
 var TODAY = {
     en: 'Today',
     fr: 'Aujourd\'hui',
@@ -35,10 +33,16 @@ function emptyFn(){}
 var App = React.createClass({
     displayName: 'App',
 
-    onLocaleChange: function(event) {
-        LOCALE = event.target.value
+    getInitialState: function() {
+        return {
+            locale: "en"
+        }
+    },
 
-        this.setState({})
+    onLocaleChange: function(event) {
+        this.setState({
+            locale: event.target.value
+        })
     },
 
     render: function(){
@@ -47,7 +51,7 @@ var App = React.createClass({
 
         return <div style={{margin: 10}}>
 
-            <p>Select locale: <select value={LOCALE} onChange={this.onLocaleChange}>
+            <p>Select locale: <select value={this.state.locale} onChange={this.onLocaleChange}>
                     <option value="en">English (US)</option>
                     <option value="fr">French</option>
                     <option value="de">German</option>
@@ -57,16 +61,16 @@ var App = React.createClass({
             </p>
 
             <DatePicker
-            style={{height: 250}}
-              xweekStartDay={3}
-              highlightWeekends={true}
-              locale="en"
-              weekNumbers
-              //defaultRange={range}
-              defaultDate={date}
-              //onChange={this.onRangeChange}
-              //onRangeChange={this.onRangeChange}
-              xweekDayNames={['S','M','T','W','T','F','S']}
+                style={{height: 250}}
+                xweekStartDay={3}
+                highlightWeekends={true}
+                locale={this.state.locale}
+                weekNumbers
+                //defaultRange={range}
+                defaultDate={date}
+                //onChange={this.onRangeChange}
+                //onRangeChange={this.onRangeChange}
+                xweekDayNames={['S','M','T','W','T','F','S']}
             />
         </div>
     },
